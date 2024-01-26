@@ -27,7 +27,7 @@ public class HttpServiceClientAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public HttpServiceClientContext feignContext(ObjectProvider<HttpServiceClientSpecification> specifications){
+    public HttpServiceClientContext HttpServiceClientContext(ObjectProvider<HttpServiceClientSpecification> specifications){
         HttpServiceClientContext context = new HttpServiceClientContext();
         context.setConfigurations(specifications.stream().toList());
         return context;
