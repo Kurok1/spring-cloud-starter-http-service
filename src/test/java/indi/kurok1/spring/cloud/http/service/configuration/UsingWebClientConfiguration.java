@@ -2,6 +2,7 @@ package indi.kurok1.spring.cloud.http.service.configuration;
 
 import indi.kurok1.spring.cloud.http.service.provider.HttpExchangeAdapterProvider;
 import indi.kurok1.spring.cloud.http.service.provider.WebClientAdapterProvider;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -12,6 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class UsingWebClientConfiguration {
 
     @Bean
+    @LoadBalanced
     public WebClient.Builder builder() {
         return WebClient.builder();
     }

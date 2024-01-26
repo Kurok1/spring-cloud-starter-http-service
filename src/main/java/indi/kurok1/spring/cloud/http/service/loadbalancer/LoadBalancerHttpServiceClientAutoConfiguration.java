@@ -1,5 +1,6 @@
 package indi.kurok1.spring.cloud.http.service.loadbalancer;
 
+import indi.kurok1.spring.cloud.http.service.HttpServiceClientContextCustomizer;
 import indi.kurok1.spring.cloud.http.service.autoconfigure.HttpServiceClientAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -24,17 +25,21 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 public class LoadBalancerHttpServiceClientAutoConfiguration {
 
-    @ConditionalOnBean(DeferringLoadBalancerExchangeFilterFunction.class)
     @Bean
-    public WebClientCustomizer loadBalancedWebClientCustomizer(DeferringLoadBalancerExchangeFilterFunction function) {
-        return builder -> {
-            builder.filter(function);
-        };
+    public HttpServiceClientContextCustomizer httpServiceRestClientCustomizer(LoadBalancerClient loadBalancerClient,
+                                                                              LoadBalancerClientFactory loadBalancerClientFactory) {
+        HttpServiceClientLoadBalancerInterceptor interceptor = new HttpServiceClientLoadBalancerInterceptor(loadBalancerClient, loadBalancerClientFactory);
+        return (serviceId, context) ->
+                context.addBeanFactoryPostProcessor(beanFactory ->
+                        beanFactory.addBeanPostProcessor(new HttpRestClientLoadBalancerPostProcessor(interceptor, context)));
     }
 
+    @ConditionalOnBean(DeferringLoadBalancerExchangeFilterFunction.class)
     @Bean
-    public ClientLoadBalancerInterceptor clientLoadBalancerInterceptor(LoadBalancerClient loadBalancerClient, LoadBalancerClientFactory loadBalancerClientFactory) {
-        return new ClientLoadBalancerInterceptor(loadBalancerClient, loadBalancerClientFactory);
+    public HttpServiceClientContextCustomizer httpServiceWebClientCustomizer(DeferringLoadBalancerExchangeFilterFunction function) {
+        return (serviceId, context) ->
+                context.addBeanFactoryPostProcessor(beanFactory ->
+                        beanFactory.addBeanPostProcessor(new HttpWebClientLoadBalancerPostProcessor(function, context)));
     }
 
 }

@@ -1,6 +1,7 @@
 package indi.kurok1.spring.cloud.http.service.autoconfigure;
 
 import indi.kurok1.spring.cloud.http.service.HttpServiceClientContext;
+import indi.kurok1.spring.cloud.http.service.HttpServiceClientContextCustomizer;
 import indi.kurok1.spring.cloud.http.service.HttpServiceClientSpecification;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -27,8 +28,9 @@ public class HttpServiceClientAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public HttpServiceClientContext HttpServiceClientContext(ObjectProvider<HttpServiceClientSpecification> specifications){
-        HttpServiceClientContext context = new HttpServiceClientContext();
+    public HttpServiceClientContext HttpServiceClientContext(ObjectProvider<HttpServiceClientSpecification> specifications,
+                                                             ObjectProvider<HttpServiceClientContextCustomizer> customizers){
+        HttpServiceClientContext context = new HttpServiceClientContext(customizers);
         context.setConfigurations(specifications.stream().toList());
         return context;
     }

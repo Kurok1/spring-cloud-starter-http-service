@@ -32,8 +32,5 @@ public class WebClientAdapterProvider implements HttpExchangeAdapterProvider {
         //spring boot
         ObjectProvider<WebClientCustomizer> clientCustomizers = context.getProvider(serviceId, WebClientCustomizer.class);
         clientCustomizers.orderedStream().forEach(customizer -> customizer.customize(builder));
-        //spring cloud
-        ObjectProvider<org.springframework.cloud.client.loadbalancer.reactive.WebClientCustomizer> cloudClientCustomizers = context.getProvider(serviceId, org.springframework.cloud.client.loadbalancer.reactive.WebClientCustomizer.class);
-        cloudClientCustomizers.orderedStream().forEach(customizer -> customizer.customize(builder));
     }
 }

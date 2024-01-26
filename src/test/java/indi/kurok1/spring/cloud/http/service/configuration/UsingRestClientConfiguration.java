@@ -2,6 +2,7 @@ package indi.kurok1.spring.cloud.http.service.configuration;
 
 import indi.kurok1.spring.cloud.http.service.provider.HttpExchangeAdapterProvider;
 import indi.kurok1.spring.cloud.http.service.provider.RestClientHttpExchangeAdapterProvider;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestClient;
 
@@ -11,6 +12,7 @@ import org.springframework.web.client.RestClient;
  */
 public class UsingRestClientConfiguration {
     @Bean
+    @LoadBalanced
     public RestClient.Builder builder() {
         return RestClient.builder();
     }

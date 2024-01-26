@@ -1,11 +1,14 @@
 package indi.kurok1.spring.cloud.http.service;
 
 import indi.kurok1.spring.cloud.http.service.autoconfigure.HttpInterfaceDefaultConfiguration;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.cloud.context.named.NamedContextFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,20 +22,25 @@ public class HttpServiceClientContext extends NamedContextFactory<HttpServiceCli
     private static final String propertyName = "spring.cloud.http.client.name";
     private static final Class<HttpInterfaceDefaultConfiguration> defaultConfigType = HttpInterfaceDefaultConfiguration.class;
 
-    public HttpServiceClientContext() {
-        this(new HashMap<>());
+    private final List<HttpServiceClientContextCustomizer> customizers;
+
+    public HttpServiceClientContext(ObjectProvider<HttpServiceClientContextCustomizer> contextCustomizers) {
+        this(contextCustomizers, new HashMap<>());
     }
 
-    public HttpServiceClientContext(Map<String, ApplicationContextInitializer<GenericApplicationContext>> initializerMap) {
+    public HttpServiceClientContext(ObjectProvider<HttpServiceClientContextCustomizer> contextCustomizers, Map<String, ApplicationContextInitializer<GenericApplicationContext>> initializerMap) {
         super(defaultConfigType, propertySourceName, propertyName, initializerMap);
+        this.customizers = contextCustomizers.orderedStream().toList();
     }
 
-    public HttpServiceClientContext withApplicationContextInitializers(Map<String, Object> applicationContextInitializers) {
-        Map<String, ApplicationContextInitializer<GenericApplicationContext>> convertedInitializers = new HashMap<>();
-        applicationContextInitializers.keySet()
-                .forEach(contextId -> convertedInitializers.put(contextId,
-                        (ApplicationContextInitializer<GenericApplicationContext>) applicationContextInitializers
-                                .get(contextId)));
-        return new HttpServiceClientContext(convertedInitializers);
+    @Override
+    public GenericApplicationContext buildContext(String name) {
+        GenericApplicationContext context = super.buildContext(name);
+
+        if (!CollectionUtils.isEmpty(this.customizers)) {
+            customizers.forEach(customizer -> customizer.customize(name, context));
+        }
+
+        return context;
     }
 }

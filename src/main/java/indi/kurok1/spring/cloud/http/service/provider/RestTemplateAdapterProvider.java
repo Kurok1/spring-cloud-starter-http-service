@@ -3,7 +3,6 @@ package indi.kurok1.spring.cloud.http.service.provider;
 import indi.kurok1.spring.cloud.http.service.HttpServiceClientContext;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
-import org.springframework.cloud.client.loadbalancer.LoadBalancerInterceptor;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.support.RestTemplateAdapter;
 import org.springframework.web.service.invoker.HttpExchangeAdapter;
@@ -25,6 +24,7 @@ public class RestTemplateAdapterProvider implements HttpExchangeAdapterProvider 
     }
 
     protected void customize(RestTemplate restTemplate, String serviceId, HttpServiceClientContext context) {
+        //spring boot
         ObjectProvider<RestTemplateCustomizer> customizerObjectProvider = context.getProvider(serviceId, RestTemplateCustomizer.class);
         customizerObjectProvider.orderedStream().forEach(customizer -> customizer.customize(restTemplate));
     }

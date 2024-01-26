@@ -20,15 +20,15 @@ import java.net.URI;
  * @author <a href="mailto:maimengzzz@gmail.com">韩超</a>
  * @since 1.0.0
  */
-public class ClientLoadBalancerInterceptor implements ClientHttpRequestInterceptor {
+public class HttpServiceClientLoadBalancerInterceptor implements ClientHttpRequestInterceptor {
 
-    private static final Logger logger = LoggerFactory.getLogger(ClientLoadBalancerInterceptor.class);
+    private static final Logger logger = LoggerFactory.getLogger(HttpServiceClientLoadBalancerInterceptor.class);
 
     private final LoadBalancerClient loadBalancerClient;
 
     private final LoadBalancerClientFactory loadBalancerClientFactory;
 
-    public ClientLoadBalancerInterceptor(LoadBalancerClient loadBalancerClient, LoadBalancerClientFactory loadBalancerClientFactory) {
+    public HttpServiceClientLoadBalancerInterceptor(LoadBalancerClient loadBalancerClient, LoadBalancerClientFactory loadBalancerClientFactory) {
         this.loadBalancerClient = loadBalancerClient;
         this.loadBalancerClientFactory = loadBalancerClientFactory;
     }
@@ -49,12 +49,5 @@ public class ClientLoadBalancerInterceptor implements ClientHttpRequestIntercept
         URI reconstructedUri = loadBalancerClient.reconstructURI(serviceInstance, uri);
         //continue
         return execution.execute(new ReconstructHttRequest(request, reconstructedUri), body);
-    }
-
-    private String getHint(String serviceId) {
-        LoadBalancerProperties properties = loadBalancerClientFactory.getProperties(serviceId);
-        String defaultHint = properties.getHint().getOrDefault("default", "default");
-        String hintPropertyValue = properties.getHint().get(serviceId);
-        return hintPropertyValue != null ? hintPropertyValue : defaultHint;
     }
 }
