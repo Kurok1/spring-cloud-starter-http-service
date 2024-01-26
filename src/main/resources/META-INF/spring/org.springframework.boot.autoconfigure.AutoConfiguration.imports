@@ -1,0 +1,2 @@
+indi.kurok1.spring.cloud.http.service.autoconfigure.HttpServiceClientAutoConfiguration
+indi.kurok1.spring.cloud.http.service.loadbalancer.LoadBalancerHttpServiceClientAutoConfiguration
